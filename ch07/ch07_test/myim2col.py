@@ -39,12 +39,19 @@ def my_im2col(input_data, filter_h, filter_w, stride=1, pad=0):
     # 初始化输出的矩阵形状
     col = np.zeros((ow*oh*N, C*filter_w*filter_h))
 
+    count = 0
     for i in range(ow):
+        count += 1
         for j in range(oh):
             # x, y的最大值都不能超过原来长宽的最大值
             # 以步长stride在矩阵中搜索长度为i:i+filter_h，宽度为j:j+filter_w的大小的矩阵
             # 按横向拉平矩阵，变为一维
-            col[2*i*ow+j: 2*i*ow+j+2, :] = img[:, :, i: i+filter_h:stride, j:j+filter_w:stride].reshape(-1, C*filter_w*filter_h)
+            p = 2*(i+j)
+            q = p+2
+            if count != 1:
+                p += 2
+                q = p+2
+            col[p: q, :] = img[:, :, i: i+filter_h:stride, j:j+filter_w:stride].reshape(-1, C*filter_w*filter_h)
     # return util.im2col(input_data, filter_h, filter_w)
     return col
 
